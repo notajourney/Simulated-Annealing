@@ -31,14 +31,18 @@ def SimulatedAnnealing(n, max_evals, variation=lambda x: x+np.random.normal(size
                                 # we need to implement step in discrete space
             f_x = func(x)#func = swidish :: here we evaluate the new vector
             eval_cntr += 1
-            dE = f_x - fmin 
-            if dE <= 0 or local_state.uniform(size=1) < np.exp(-dE/T) :
-                xmin = x
-                fmin = f_x
-            if dE < 0 :
-                fbest=f_x
-                xbest=x
+            dE = f_x - fmin #de is negative iff  f_x is "better" fmin
+            if dE <= 0 or local_state.uniform(size=1) < np.exp(-dE/T) :# accepting disimprovment
+                xmin = x #updating minimum vector
+                fmin = f_x#updating minimum value
+                
+            if dE < 0 :# saving the global best:: regardless to accepting disaprovment
+                fbest=f_x   #this is necessarily the best value we have found so far
+                xbest=x     #this is necessarily the best vector we have found so far
+                
+                
             history.append(fmin)
+            
             if np.mod(eval_cntr,int(max_evals/10))==0 :
                 print(eval_cntr," evals: fmin=",fmin)
             if fbest < f_lower_bound+eps_satisfactory :
