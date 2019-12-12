@@ -9,25 +9,43 @@ import objFunctions as fct
 
 def basicHillClimber(n, evals, func=lambda x: x.dot(x)) :
     history = []
-    #randomize vector  of +1 -1 sized n into --> xmin
-    fmin = func(xmin)# the first  is the minimal
+    #randomize vector  of +1 -1 sized n into --> xmax
+    xmax =  2*np.random.randint(0,2, size=n)-1
+    fmax = func(xmax)# the first  is the minimal
     
-    history.append(fmin)# adding to histoy of mininma
+    history.append(fmax)# adding to histoy of mininma
     
     for _ in range(evals) :
-        x = xmin + np.random.normal(size=n)## step: we need to imolement discrete step:
-        # generate a random between zero to n-1 and flip that coordinate(multiply by -1)
+        x = step(xmax,n,1)#discrete step::Default step = 1. means:closest neighbor
+     
         f_x = func(x)#evaluate the new vector
-        if f_x < fmin :#checking if the new vector is "better" then previous vector (we need to maximaize)
-            xmin = x# if better: x min = x
-            fmin = f_x
-        history.append(fmin)
-    return xmin,fmin,history
+        if f_x > fmax :#checking if the new vector is "better" then previous vector (we need to maximaize)
+            xmax = x# if better: x min = x
+            fmax = f_x
+        history.append(fmax)
+    return xmax,fmax,history
 #
+    
+
+def step(vec, n, repeat):
+    temp = vec.copy()
+    
+    
+    for x in range(repeat):
+
+        index = np.random.randint(0,n)
+        temp[index] = -1*temp[index]
+        
+    return temp
+  
+    
 if __name__ == "__main__" :
     
     n=100
-    evals=10**3#number of calls to objective
-    xmin,fmin,history = basicHillClimber(n,evals,fct.SwedishPump)
+    evals=10**5#number of calls to objective
+    xmax,fmax,history = basicHillClimber(n,evals,fct.SwedishPump)
     plt.semilogy(history)#plot (not interessting)
-    print("minimal Zumba found is ", fmin," at location ", xmin)
+    print("maximal SwedishPump found is ", fmax)#" at location ", xmax)
+    
+
+    

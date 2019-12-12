@@ -18,38 +18,54 @@ def SimulatedAnnealing(n, max_evals, variation=lambda x: x+np.random.normal(size
     history = []
     
     
-    xbest = xmin = local_state.uniform(size=n)*(ub - lb) + lb# we need to randomize +-1 vector of dim=100
-    fbest = fmin = func(xmin)#stays the same
+    xbest = xmax = local_state.uniform(size=n)*(ub - lb) + lb# we need to randomize +-1 vector of dim=100
+    fbest = fmax = func(xmax)#stays the same
     eval_cntr = 1
     T = T_init
-    history.append(fmin)
+    history.append(fmax)
     
     
     while ((T > T_min) and eval_cntr < max_evals) :
         for _ in range(max_internal_runs) :
-            x = variation(xmin)# variation is the step
+            x = variation(xmax)# variation is the step
                                 # we need to implement step in discrete space
             f_x = func(x)#func = swidish :: here we evaluate the new vector
             eval_cntr += 1
-            dE = f_x - fmin #de is negative iff  f_x is "better" fmin
+            dE = f_x - fmax #de is negative iff  f_x is "better" fmax
             if dE <= 0 or local_state.uniform(size=1) < np.exp(-dE/T) :# accepting disimprovment
-                xmin = x #updating minimum vector
-                fmin = f_x#updating minimum value
+                xmax = x #updating minimum vector
+                fmax = f_x#updating minimum value
                 
             if dE < 0 :# saving the global best:: regardless to accepting disaprovment
                 fbest=f_x   #this is necessarily the best value we have found so far
                 xbest=x     #this is necessarily the best vector we have found so far
                 
                 
-            history.append(fmin)
+            history.append(fmax)
             
             if np.mod(eval_cntr,int(max_evals/10))==0 :
-                print(eval_cntr," evals: fmin=",fmin)
+                print(eval_cntr," evals: fmax=",fmax)
             if fbest < f_lower_bound+eps_satisfactory :
                 T=T_min
                 break
         T *= alpha
     return xbest,fbest,history
+
+
+
+#################################################Step Function#####################################################
+def step(vec, n, repeat):
+    temp = vec.copy()
+    
+    
+    for x in range(repeat):
+
+        index = np.random.randint(0,n)
+        temp[index] = -1*temp[index]
+        
+    return temp
+
+#################################################Step Function#####################################################
 #
 if __name__ == "__main__" :
     lb,ub = -5,5
@@ -59,10 +75,10 @@ if __name__ == "__main__" :
     fbest = []
     xbest = []
     for i in range(Nruns) :
-        xmin,fmin,history = SimulatedAnnealing(n,lb,ub,evals,lambda x: x+np.random.normal(size=len(x)),fct.WildZumba,i+17)
+        xmax,fmax,history = SimulatedAnnealing(n,lb,ub,evals,lambda x: x+np.random.normal(size=len(x)),fct.WildZumba,i+17)
         plt.semilogy(history)
         plt.show()
-        print(i,": minimal Zumba found is ", fmin," at location ", xmin)
-        fbest.append(fmin)
-        xbest.append(xmin)
+        print(i,": minimal Zumba found is ", fmax," at location ", xmax)
+        fbest.append(fmax)
+        xbest.append(xmax)
     print("====\n Best ever: ",min(fbest),"x*=",xbest[fbest.index(min(fbest))])
