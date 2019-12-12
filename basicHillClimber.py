@@ -16,7 +16,7 @@ def basicHillClimber(n, evals, func=lambda x: x.dot(x)) :
     history.append(fmax)# adding to histoy of mininma
     
     for _ in range(evals) :
-        x = step(xmax,n,1)#discrete step::Default step = 1. means:closest neighbor
+        x = step(xmax,n,2)#discrete step::Default step = 1. means:closest neighbor
      
         f_x = func(x)#evaluate the new vector
         if f_x > fmax :#checking if the new vector is "better" then previous vector (we need to maximaize)
@@ -27,11 +27,11 @@ def basicHillClimber(n, evals, func=lambda x: x.dot(x)) :
 #
     
 
-def step(vec, n, repeat):
+def step(vec, n, neighbor_order):
     temp = vec.copy()
     
     
-    for x in range(repeat):
+    for x in range(neighbor_order):
 
         index = np.random.randint(0,n)
         temp[index] = -1*temp[index]
@@ -45,7 +45,7 @@ if __name__ == "__main__" :
     evals=10**5#number of calls to objective
     xmax,fmax,history = basicHillClimber(n,evals,fct.SwedishPump)
     plt.semilogy(history)#plot (not interessting)
-    print("maximal SwedishPump found is ", fmax)#" at location ", xmax)
+    print("Hill Climber:maximal SwedishPump found is ", fmax)#" at location ", xmax)
     
 
     
